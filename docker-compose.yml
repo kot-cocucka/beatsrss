@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  bot:
+    build:
+      context: .
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: bot
+    networks:
+      - default
+
+  celery:
+    build:
+      context: .
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: celery
+    networks:
+      - default
+
+  db:
+    image: postgres:latest
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - default
+    ports: 
+      - 5432:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    networks:
+      - default
+    volumes:
+      - redis_data:/data
+
+
+
+networks:
+  default:
+
+volumes:
+  db_data:
+  redis_data:

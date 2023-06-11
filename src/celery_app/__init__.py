@@ -1,0 +1,1 @@
+"""Celery settings for application."""
