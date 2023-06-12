@@ -53,7 +53,7 @@ def parse_html_and_store(rss_link: HttpUrl, rss_title: str) -> None:
     _store_links_in_db(html_links, rss_link=rss_link, rss_title=rss_title)
 
     # Publish HTML links to Telegram
-    links_message = '\n'.join(
+    links_message = ' | '.join(
         [
             '[{0}]({1})'.format(
                 urlparse(link).netloc,
