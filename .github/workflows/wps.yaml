@@ -1,0 +1,9 @@
+name: Style Check
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: wemake-python-styleguide 
+        uses: wemake-services/wemake-python-styleguide@0.18.0
