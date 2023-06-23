@@ -18,7 +18,7 @@ class CustomAdapter(logging.LoggerAdapter):
 
     custom_params = (
         'event',
-        'event_attrs',
+        'event_args',
     )
 
     def with_extra(
@@ -26,7 +26,7 @@ class CustomAdapter(logging.LoggerAdapter):
         level: str,
         msg: str,
         event: str,
-        event_attrs: dict[str, object] | None = None,
+        event_args: dict[str, object] | None = None,
         *args,
         **kwargs,
     ):
@@ -36,13 +36,13 @@ class CustomAdapter(logging.LoggerAdapter):
             level (str): Log Level
             msg (str): Record message
             event (str): Event (basically, function or method call)
-            event_attrs (dict[str, object] | None, optional): Call arguments
+            event_args (dict[str, object] | None, optional): Call arguments
 
         Returns:
             _type_: Log Message
         """
         self.extra['event'] = event
-        self.extra['event_attrs'] = event_attrs
+        self.extra['event_args'] = event_args
 
         return super().log(logging.getLevelName(level), msg, *args, **kwargs)
 
@@ -106,7 +106,7 @@ class CustomFormatter(logging.Formatter):
             'EventAttributes': json.dumps(
                 getattr(
                     record,
-                    'event_attrs',
+                    'event_args',
                     None,
                 ),
                 default=str,
@@ -125,18 +125,19 @@ class CustomFormatter(logging.Formatter):
         return json.dumps(log_record)
 
 
-def get_logger() -> CustomAdapter:
+def get_logger(name: Optional[str] = None) -> CustomAdapter:
     """Return current configured logger.
 
     Returns:
         CustomAdapter: Custom Logging Adapter class
     """
-    uuid = uuid4()
-    logger = logging.getLogger('BeatRss')
+    name = name or __name__
+
+    logger = logging.getLogger(name)
     if logger.handlers:
         return CustomAdapter(
             logger,
-            {'uuid': str(uuid)},
+            {'uuid': str(uuid4())},
         )
 
     logger.setLevel(settings.log_level)
